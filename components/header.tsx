@@ -67,6 +67,14 @@ export function Header() {
               About
               <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-primary to-secondary group-hover:w-full transition-all duration-300"></span>
             </Link>
+            <Link href="/blog" className="text-sm font-semibold text-foreground hover:text-primary transition-colors relative group">
+              Blog
+              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-primary to-secondary group-hover:w-full transition-all duration-300"></span>
+            </Link>
+            <Link href="/contact" className="text-sm font-semibold text-foreground hover:text-primary transition-colors relative group">
+              Contact Us
+              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-primary to-secondary group-hover:w-full transition-all duration-300"></span>
+            </Link>
           </nav>
 
           {/* Actions */}

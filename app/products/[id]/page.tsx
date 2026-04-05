@@ -129,11 +129,19 @@ export default function ProductDetailPage() {
                 </div>
 
                 {/* Description */}
-                <div className="mb-8 p-4 bg-muted/30 rounded-lg">
-                  <h3 className="font-semibold text-foreground mb-2">About this product</h3>
-                  <p className="text-muted-foreground leading-relaxed">
-                    {product.fullDescription || product.description}
-                  </p>
+                <div className="mb-8 p-4 bg-muted/30 rounded-lg space-y-4">
+                  <div>
+                    <h3 className="font-semibold text-foreground mb-2">About this product</h3>
+                    <p className="text-muted-foreground leading-relaxed">
+                      {product.fullDescription || product.description}
+                    </p>
+                  </div>
+                  {product.tabletsCount !== undefined && product.tabletsCount > 0 && (
+                    <div className="pt-4 border-t border-border">
+                      <h3 className="font-semibold text-foreground mb-1">Quantity Details</h3>
+                      <p className="text-muted-foreground">Contains {product.tabletsCount} tablets per package.</p>
+                    </div>
+                  )}
                 </div>
 
                 {/* Quantity Selector */}
@@ -198,6 +206,36 @@ export default function ProductDetailPage() {
             </div>
           </div>
         </section>
+
+        {/* Reviews Section */}
+        {product.reviews && product.reviews.length > 0 && (
+          <section className="py-12 bg-muted/10 border-t border-border">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <h2 className="text-2xl font-bold mb-8 text-foreground">Customer Reviews</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {product.reviews.map((review) => (
+                  <div key={review.id} className="bg-card p-6 rounded-xl border border-border shadow-sm">
+                    <div className="flex justify-between items-start mb-4">
+                      <div>
+                        <div className="font-semibold text-foreground">{review.user}</div>
+                        <div className="text-xs text-muted-foreground mt-1">{review.date}</div>
+                      </div>
+                      <div className="flex gap-1">
+                        {[...Array(5)].map((_, i) => (
+                          <Heart 
+                            key={i} 
+                            className={`h-4 w-4 ${i < review.rating ? 'fill-primary text-primary' : 'text-muted-foreground'}`} 
+                          />
+                        ))}
+                      </div>
+                    </div>
+                    <p className="text-muted-foreground italic">"{review.text}"</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+        )}
       </main>
 
       <Footer />
