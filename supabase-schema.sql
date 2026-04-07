@@ -13,7 +13,9 @@ CREATE TABLE IF NOT EXISTS public.orders (
     subtotal DECIMAL(10, 2) NOT NULL,
     discount DECIMAL(10, 2) NOT NULL DEFAULT 0,
     total_amount DECIMAL(10, 2) NOT NULL,
-    status TEXT NOT NULL DEFAULT 'pending'
+    status TEXT NOT NULL DEFAULT 'pending',
+    stripe_session_id TEXT,
+    stripe_payment_url TEXT
 );
 
 -- Enable RLS for orders based on email (optional for anonymous tracking)
@@ -47,3 +49,11 @@ CREATE POLICY "Enable insert for anonymous users on order_items" ON public.order
     FOR INSERT
     TO public
     WITH CHECK (true);
+
+-- ─────────────────────────────────────────────────────────────────────────────
+-- MIGRATION: Add Stripe payment columns to existing orders table
+-- Run this in Supabase SQL Editor if the orders table already exists:
+-- ─────────────────────────────────────────────────────────────────────────────
+ALTER TABLE public.orders
+  ADD COLUMN IF NOT EXISTS stripe_session_id TEXT,
+  ADD COLUMN IF NOT EXISTS stripe_payment_url TEXT;
