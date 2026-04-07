@@ -18,10 +18,12 @@ export async function POST(req: Request) {
 
     // Insert into Supabase
     const supabase = await createClient();
+    const orderId = crypto.randomUUID();
     
-    const { data: orderData, error: orderError } = await supabase
+    const { error: orderError } = await supabase
       .from('orders')
       .insert({
+        id: orderId,
         full_name: formData.fullName,
         email: formData.email,
         phone: formData.phone,
@@ -34,9 +36,7 @@ export async function POST(req: Request) {
         discount: discount,
         total_amount: total,
         status: 'pending'
-      })
-      .select()
-      .single();
+      });
 
     if (orderError) {
       console.error('Supabase Order Error:', orderError);
@@ -45,7 +45,7 @@ export async function POST(req: Request) {
 
     // Insert order items
     const orderItems = cart.map((item: any) => ({
-      order_id: orderData.id,
+      order_id: orderId,
       product_id: item.id,
       product_name: item.name,
       quantity: item.quantity,
@@ -74,7 +74,7 @@ export async function POST(req: Request) {
       <div style="font-family: Arial, sans-serif; max-w: 600px; margin: 0 auto; color: #333;">
         <h2 style="color: #4CAF50; text-align: center;">Order Confirmed!</h2>
         <p>Dear ${formData.fullName},</p>
-        <p>Thank you for placing your order with us. Your order ID is <strong>#${orderData.id.slice(0, 8).toUpperCase()}</strong>.</p>
+        <p>Thank you for placing your order with us. Your order ID is <strong>#${orderId.slice(0, 8).toUpperCase()}</strong>.</p>
         
         <h3 style="border-bottom: 1px solid #ccc; padding-bottom: 5px;">Order Summary</h3>
         <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
@@ -139,7 +139,7 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ 
       success: true, 
-      orderId: orderData.id,
+      orderId: orderId,
       emailId: emailData?.id
     });
     
