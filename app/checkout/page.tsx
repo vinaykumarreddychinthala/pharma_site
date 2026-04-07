@@ -11,6 +11,8 @@ import Link from 'next/link'
 export default function CheckoutPage() {
   const { cart, clearCart, getSubtotal, getDiscount, getCartTotal } = useCart()
   const [orderPlaced, setOrderPlaced] = useState(false)
+  const [placedOrderDetails, setPlacedOrderDetails] = useState<{id: string, total: number, items: any[], subtotal: number, discount: number} | null>(null)
+  const [isSubmitting, setIsSubmitting] = useState(false)
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
@@ -58,15 +60,15 @@ export default function CheckoutPage() {
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center mb-8">
                   <div>
                     <p className="text-sm text-muted-foreground mb-2">Order ID</p>
-                    <p className="text-lg font-bold text-foreground">#{Math.random().toString(36).substring(7).toUpperCase()}</p>
+                    <p className="text-lg font-bold text-foreground">#{placedOrderDetails?.id}</p>
                   </div>
                   <div>
                     <p className="text-sm text-muted-foreground mb-2">Total Amount</p>
-                    <p className="text-lg font-bold text-primary">₹{getCartTotal().toFixed(2)}</p>
+                    <p className="text-lg font-bold text-primary">₹{placedOrderDetails?.total.toFixed(2)}</p>
                   </div>
                   <div>
                     <p className="text-sm text-muted-foreground mb-2">Items</p>
-                    <p className="text-lg font-bold text-foreground">{cart.length}</p>
+                    <p className="text-lg font-bold text-foreground">{placedOrderDetails?.items.length}</p>
                   </div>
                   <div>
                     <p className="text-sm text-muted-foreground mb-2">Delivery</p>
@@ -77,7 +79,7 @@ export default function CheckoutPage() {
                 <div className="border-t border-border pt-6">
                   <h3 className="font-semibold text-foreground mb-4">Order Items</h3>
                   <div className="space-y-2 text-sm text-muted-foreground">
-                    {cart.map((item) => (
+                    {placedOrderDetails?.items.map((item: any) => (
                       <div key={item.id} className="flex justify-between">
                         <span>{item.name} x {item.quantity}</span>
                         <span>₹{(item.price * item.quantity).toFixed(2)}</span>
@@ -115,16 +117,51 @@ export default function CheckoutPage() {
     }))
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     // Validate form
     if (!formData.fullName || !formData.email || !formData.phone || !formData.address || !formData.city || !formData.state || !formData.zipCode) {
       alert('Please fill in all fields')
       return
     }
-    // Order placed
-    setOrderPlaced(true)
-    clearCart()
+
+    try {
+      setIsSubmitting(true)
+      const response = await fetch('/api/place-order', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          formData,
+          cart,
+          subtotal: getSubtotal(),
+          discount: getDiscount(),
+          total: getCartTotal()
+        })
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Something went wrong')
+      }
+
+      // Order placed successfully
+      setPlacedOrderDetails({
+        id: data.orderId ? data.orderId.slice(0, 8).toUpperCase() : Math.random().toString(36).substring(7).toUpperCase(),
+        total: getCartTotal(),
+        items: [...cart],
+        subtotal: getSubtotal(),
+        discount: getDiscount()
+      })
+      setOrderPlaced(true)
+      clearCart()
+    } catch (error: any) {
+      alert(error.message || 'Failed to place order. Please try again.')
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
@@ -275,8 +312,8 @@ export default function CheckoutPage() {
                     </div>
 
                     {/* Submit Button */}
-                    <Button type="submit" size="lg" className="w-full">
-                      Place Order
+                    <Button type="submit" size="lg" className="w-full" disabled={isSubmitting}>
+                      {isSubmitting ? 'Processing...' : 'Place Order'}
                     </Button>
                   </div>
                 </form>

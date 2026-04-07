@@ -2,44 +2,13 @@
 
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { ShoppingCart, Heart, LogOut, User as UserIcon } from 'lucide-react'
+import { ShoppingCart, Heart } from 'lucide-react'
 import { useCart } from '@/context/cart-context'
 import { Button } from '@/components/ui/button'
-import { useEffect, useState } from 'react'
-import { createClient } from '@/lib/supabase/client'
-import { User } from '@supabase/supabase-js'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
 
 export function Header() {
   const { cart, wishlist } = useCart()
-  const [user, setUser] = useState<User | null>(null)
   const router = useRouter()
-  const supabase = createClient()
-
-  useEffect(() => {
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      setUser(user)
-    })
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
-        setUser(session?.user ?? null)
-      }
-    )
-
-    return () => subscription.unsubscribe()
-  }, [])
-
-  const handleSignOut = async () => {
-    await supabase.auth.signOut()
-    setUser(null)
-    router.refresh()
-  }
 
   return (
     <header className="sticky top-0 z-50 bg-gradient-to-r from-card to-card/95 border-b border-primary/10 shadow-md backdrop-blur-sm">
@@ -98,39 +67,6 @@ export function Header() {
                 )}
               </Button>
             </Link>
-            {user ? (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon" className="rounded-full bg-gradient-to-r from-primary/10 to-secondary/10 hover:from-primary/20 hover:to-secondary/20">
-                    <UserIcon className="h-5 w-5 text-primary" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-56 mt-2">
-                  <div className="flex items-center justify-start gap-2 p-2">
-                    <div className="flex flex-col space-y-1 leading-none">
-                      <p className="font-medium text-sm">Account</p>
-                      <p className="w-[200px] truncate text-xs text-muted-foreground">
-                        {user.email}
-                      </p>
-                    </div>
-                  </div>
-                  <DropdownMenuItem onClick={handleSignOut} className="text-destructive focus:bg-destructive/10 cursor-pointer mt-2">
-                    <LogOut className="mr-2 h-4 w-4" />
-                    <span>Log out</span>
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            ) : (
-              <Link href="/login">
-                <Button variant="ghost" size="sm" className="hidden sm:flex gap-2">
-                  <UserIcon className="h-4 w-4" />
-                  <span>Sign In</span>
-                </Button>
-                <Button variant="ghost" size="icon" className="sm:hidden">
-                  <UserIcon className="h-5 w-5" />
-                </Button>
-              </Link>
-            )}
           </div>
         </div>
       </div>
