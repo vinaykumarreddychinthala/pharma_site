@@ -4,15 +4,22 @@ import { ProductCard } from '@/components/product-card'
 import { Button } from '@/components/ui/button'
 import { ArrowRight, Shield, Truck, Pill, Clock } from 'lucide-react'
 import Link from 'next/link'
-import { getFeaturedProducts } from '@/lib/products'
+import { createClient } from '@/lib/supabase/server'
 
 export const metadata = {
   title: 'Believe Pharma - Quality Medicines Online',
   description: 'Discover trusted pharmaceutical products with fast delivery and competitive prices',
 }
 
-export default function Home() {
-  const featuredProducts = getFeaturedProducts(6)
+export const revalidate = 0
+
+export default async function Home() {
+  const supabase = await createClient()
+  const { data: featuredProducts } = await supabase
+    .from('products')
+    .select('*')
+    .limit(6)
+    .order('created_at', { ascending: false })
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -123,28 +130,30 @@ export default function Home() {
         </section>
 
         {/* Featured Products Section */}
-        <section className="py-20 md:py-28 bg-background">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex justify-between items-center mb-16">
-              <div>
-                <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-2">Featured Products</h2>
-                <p className="text-muted-foreground">Our most trusted and popular medicines</p>
+        {featuredProducts && featuredProducts.length > 0 && (
+          <section className="py-20 md:py-28 bg-background">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <div className="flex justify-between items-center mb-16">
+                <div>
+                  <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-2">Featured Products</h2>
+                  <p className="text-muted-foreground">Our most trusted and popular medicines</p>
+                </div>
+                <Link href="/products">
+                  <Button className="bg-primary hover:bg-primary/90">
+                    View All
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Button>
+                </Link>
               </div>
-              <Link href="/products">
-                <Button className="bg-primary hover:bg-primary/90">
-                  View All
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Button>
-              </Link>
-            </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-              {featuredProducts.map((product) => (
-                <ProductCard key={product.id} product={product} />
-              ))}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                {featuredProducts.map((product) => (
+                  <ProductCard key={product.id} product={product} />
+                ))}
+              </div>
             </div>
-          </div>
-        </section>
+          </section>
+        )}
 
         {/* CTA Section */}
         <section className="relative py-24 md:py-32 bg-gradient-to-r from-primary via-primary to-secondary overflow-hidden">
