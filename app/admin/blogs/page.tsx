@@ -8,10 +8,15 @@ import { createBlog, deleteBlog } from '../actions'
 import { Trash2 } from 'lucide-react'
 
 export default async function AdminBlogsPage() {
-  const supabase = await createClient()
-  const { data: blogs } = await supabase.from('blogs').select('*').order('created_at', { ascending: false })
+  try {
+    const supabase = await createClient()
+    const { data: blogs, error: fetchError } = await supabase.from('blogs').select('*').order('created_at', { ascending: false })
 
-  return (
+    if (fetchError) {
+      throw new Error(`Database Error: ${fetchError.message}`)
+    }
+
+    return (
     <div className="space-y-8">
       <div>
         <h1 className="text-3xl font-bold tracking-tight">Manage Blogs</h1>
@@ -104,7 +109,16 @@ export default async function AdminBlogsPage() {
             </CardContent>
           </Card>
         </div>
+        </div>
       </div>
-    </div>
-  )
+    )
+  } catch (error: any) {
+    return (
+      <div className="p-8 bg-red-500/10 border border-red-500/20 rounded-3xl text-red-500">
+        <h2 className="text-xl font-bold mb-2">Something went wrong</h2>
+        <p className="text-sm opacity-80">{error?.message || "An unexpected error occurred while loading the blogs."}</p>
+        <p className="mt-4 text-xs opacity-50 font-mono">Check your Vercel logs or environment variables for details.</p>
+      </div>
+    )
+  }
 }
