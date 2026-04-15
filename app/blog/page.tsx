@@ -46,21 +46,40 @@ export default async function BlogPage() {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               {posts.map((post) => (
-                <article key={post.id} className="group relative bg-card p-8 rounded-3xl border border-border/50 hover:border-primary/30 shadow-sm hover:shadow-xl hover:shadow-primary/5 transition-all duration-500 flex flex-col justify-between z-10 overflow-hidden">
+                <article key={post.id} className="group relative bg-card rounded-3xl border border-border/50 hover:border-primary/30 shadow-sm hover:shadow-xl hover:shadow-primary/5 transition-all duration-500 flex flex-col z-10 overflow-hidden">
                   
-                  {/* Subtle Background Glow on Hover */}
-                  <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-2xl -mr-16 -mt-16 group-hover:bg-primary/20 transition-colors duration-500"></div>
-
-                  <div>
-                    <div className="flex items-center justify-between mb-6">
-                      <span className="inline-flex items-center px-4 py-1.5 bg-primary/10 text-primary text-xs font-bold rounded-full uppercase tracking-wider">
+                  {/* Featured Image */}
+                  {post.image ? (
+                    <div className="relative h-48 w-full overflow-hidden">
+                      <img src={post.image} alt={post.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                      <span className="absolute bottom-4 left-6 inline-flex items-center px-4 py-1.5 bg-primary text-primary-foreground text-[10px] font-bold rounded-full uppercase tracking-wider">
                         {post.category}
                       </span>
-                      <span className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground bg-muted/50 px-3 py-1.5 rounded-full">
+                    </div>
+                  ) : (
+                    <div className="h-4 bg-primary/5"></div>
+                  )}
+
+                  <div className="p-8 flex flex-col flex-1">
+                    {!post.image && (
+                      <div className="flex items-center justify-between mb-6">
+                        <span className="inline-flex items-center px-4 py-1.5 bg-primary/10 text-primary text-xs font-bold rounded-full uppercase tracking-wider">
+                          {post.category}
+                        </span>
+                        <span className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground bg-muted/50 px-3 py-1.5 rounded-full">
+                          <Calendar className="h-3.5 w-3.5" />
+                          {post.date}
+                        </span>
+                      </div>
+                    )}
+                    
+                    {post.image && (
+                      <div className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground mb-4">
                         <Calendar className="h-3.5 w-3.5" />
                         {post.date}
-                      </span>
-                    </div>
+                      </div>
+                    )}
 
                     <h2 className="text-2xl font-bold text-foreground mb-4 leading-tight group-hover:text-primary transition-colors">
                       {post.title}

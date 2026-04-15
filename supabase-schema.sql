@@ -95,10 +95,45 @@ CREATE TABLE IF NOT EXISTS public.blogs (
     date TEXT NOT NULL,
     author TEXT NOT NULL,
     category TEXT NOT NULL,
+    image TEXT, -- Added for featured image support
     created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
 -- Disable RLS (Simplified for Admin Panel)
 ALTER TABLE public.products DISABLE ROW LEVEL SECURITY;
 ALTER TABLE public.blogs DISABLE ROW LEVEL SECURITY;
+
+-- ─────────────────────────────────────────────────────────────────────────────
+-- STORAGE: Pharma Images Bucket
+-- ─────────────────────────────────────────────────────────────────────────────
+
+-- Create a bucket for pharma images if it doesn't exist
+INSERT INTO storage.buckets (id, name, public)
+VALUES ('pharma-images', 'pharma-images', true)
+ON CONFLICT (id) DO NOTHING;
+
+-- Storage Policies
+-- 1. Allow public read access to images
+CREATE POLICY "Public Read Access"
+ON storage.objects FOR SELECT
+TO public
+USING (bucket_id = 'pharma-images');
+
+-- 2. Allow authenticated (and anon for simplicity if RLS is off) to upload
+-- Note: In a real app, you'd restrict this more, but we're keeping it simple as requested.
+CREATE POLICY "Admin Upload Access"
+ON storage.objects FOR INSERT
+TO public
+WITH CHECK (bucket_id = 'pharma-images');
+
+CREATE POLICY "Admin Update Access"
+ON storage.objects FOR UPDATE
+TO public
+USING (bucket_id = 'pharma-images');
+
+CREATE POLICY "Admin Delete Access"
+ON storage.objects FOR DELETE
+TO public
+USING (bucket_id = 'pharma-images');
+
 

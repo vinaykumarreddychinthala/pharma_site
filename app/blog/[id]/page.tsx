@@ -58,6 +58,13 @@ export default async function BlogPostPage({ params }: { params: Promise<{ id: s
             </div>
           </header>
 
+          {/* Featured Image */}
+          {post.image && (
+            <div className="mb-16 rounded-3xl overflow-hidden shadow-2xl shadow-primary/5 border border-border/50">
+              <img src={post.image} alt={post.title} className="w-full h-auto max-h-[600px] object-cover" />
+            </div>
+          )}
+
           {/* Article Content */}
           <div className="max-w-3xl mx-auto">
             {post.content.split('\n\n').map((paragraph, index) => {

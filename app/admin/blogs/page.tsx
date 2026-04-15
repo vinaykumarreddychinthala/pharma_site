@@ -49,6 +49,12 @@ export default async function AdminBlogsPage() {
                 </div>
 
                 <div className="space-y-2">
+                  <Label htmlFor="image">Featured Image</Label>
+                  <Input id="image" name="image" type="file" accept="image/*" className="cursor-pointer file:mr-4 file:py-1 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20" />
+                  <p className="text-[10px] text-muted-foreground mt-1 px-1">Optional. Upload an image for the blog post header.</p>
+                </div>
+
+                <div className="space-y-2">
                   <Label htmlFor="content">Full Content (Markdown supported)</Label>
                   <Textarea id="content" name="content" className="font-mono text-sm" rows={12} required />
                 </div>

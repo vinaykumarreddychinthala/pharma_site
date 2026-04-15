@@ -54,8 +54,9 @@ export default async function AdminProductsPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="image">Image Path/URL</Label>
-                  <Input id="image" name="image" placeholder="/viagra.jpeg" required />
+                  <Label htmlFor="image">Product Image</Label>
+                  <Input id="image" name="image" type="file" accept="image/*" required className="cursor-pointer file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20" />
+                  <p className="text-[10px] text-muted-foreground mt-1 px-1">Upload a high-quality JPG or PNG from your computer.</p>
                 </div>
 
                 <Button type="submit" className="w-full">Create Product</Button>
