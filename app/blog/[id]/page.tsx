@@ -1,32 +1,22 @@
-'use client'
-
+import { createClient } from '@/lib/supabase/server'
+import { notFound } from 'next/navigation'
 import { Header } from '@/components/header'
 import { Footer } from '@/components/footer'
 import { Calendar, User as UserIcon, ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
-import { getBlogPostById } from '@/lib/blogs'
-import { useParams } from 'next/navigation'
+export default async function BlogPostPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params
+  const supabase = await createClient()
 
-export default function BlogPostPage() {
-  const params = useParams()
-  const id = params.id as string
-  const post = getBlogPostById(id)
+  const { data: post } = await supabase
+    .from('blogs')
+    .select('*')
+    .eq('id', id)
+    .single()
+
 
   if (!post) {
-    return (
-      <div className="flex flex-col min-h-screen">
-        <Header />
-        <main className="flex-1 flex items-center justify-center">
-          <div className="text-center">
-            <h1 className="text-3xl font-bold mb-4">Post Not Found</h1>
-            <Link href="/blog" className="text-primary hover:underline font-medium">
-              Back to Blog
-            </Link>
-          </div>
-        </main>
-        <Footer />
-      </div>
-    )
+    notFound()
   }
 
   return (

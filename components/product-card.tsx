@@ -74,7 +74,7 @@ export function ProductCard({ product }: ProductCardProps) {
 
         <div className="flex items-center justify-between mb-5 pb-4 border-b border-border/50">
           <span className="text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-            ₹{product.price}
+            ${product.price}
           </span>
           {product.stock > 0 ? (
             <span className="text-xs font-semibold bg-primary/10 text-primary px-3 py-1 rounded-full">

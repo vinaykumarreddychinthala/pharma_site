@@ -3,14 +3,22 @@ import { Footer } from '@/components/footer'
 import { ArrowRight, Calendar, User as UserIcon } from 'lucide-react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
-import { blogPosts } from '@/lib/blogs'
+import { createClient } from '@/lib/supabase/server'
 
 export const metadata = {
   title: 'Health Blog - Believe Pharma',
   description: 'Latest health tips, medical news, and wellness advice from Believe Pharma experts.',
 }
 
-export default function BlogPage() {
+export const revalidate = 0
+
+export default async function BlogPage() {
+  const supabase = await createClient()
+  const { data: blogPosts } = await supabase.from('blogs').select('*').order('created_at', { ascending: false })
+  
+  // Fallback if empty array before migration
+  const posts = blogPosts || []
+
   return (
     <div className="flex flex-col min-h-screen">
       <Header />
@@ -37,7 +45,7 @@ export default function BlogPage() {
         <section className="py-24 bg-gradient-to-b from-muted/30 to-background relative">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              {blogPosts.map((post) => (
+              {posts.map((post) => (
                 <article key={post.id} className="group relative bg-card p-8 rounded-3xl border border-border/50 hover:border-primary/30 shadow-sm hover:shadow-xl hover:shadow-primary/5 transition-all duration-500 flex flex-col justify-between z-10 overflow-hidden">
                   
                   {/* Subtle Background Glow on Hover */}

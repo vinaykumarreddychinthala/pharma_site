@@ -57,3 +57,48 @@ CREATE POLICY "Enable insert for anonymous users on order_items" ON public.order
 ALTER TABLE public.orders
   ADD COLUMN IF NOT EXISTS stripe_session_id TEXT,
   ADD COLUMN IF NOT EXISTS stripe_payment_url TEXT;
+
+-- ─────────────────────────────────────────────────────────────────────────────
+-- MIGRATION: Admin Panel & Dynamic Content
+-- Run this in Supabase SQL Editor to enable dynamic Products and Blogs
+-- ─────────────────────────────────────────────────────────────────────────────
+
+-- Create Products Table
+CREATE TABLE IF NOT EXISTS public.products (
+    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+    name TEXT NOT NULL,
+    description TEXT NOT NULL,
+    price DECIMAL(10, 2) NOT NULL,
+    image TEXT NOT NULL,
+    category TEXT NOT NULL,
+    stock INTEGER NOT NULL DEFAULT 100,
+    full_description TEXT,
+    tablets_count INTEGER,
+    packs JSONB DEFAULT '[]'::jsonb,
+    shipping_options JSONB DEFAULT '[]'::jsonb,
+    how_to_use JSONB DEFAULT '[]'::jsonb,
+    benefits JSONB DEFAULT '[]'::jsonb,
+    effects_timing TEXT,
+    last_updated TEXT,
+    written_by TEXT,
+    medically_reviewed_by TEXT,
+    reviews JSONB DEFAULT '[]'::jsonb,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
+-- Create Blogs Table
+CREATE TABLE IF NOT EXISTS public.blogs (
+    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+    title TEXT NOT NULL,
+    excerpt TEXT NOT NULL,
+    content TEXT NOT NULL,
+    date TEXT NOT NULL,
+    author TEXT NOT NULL,
+    category TEXT NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
+-- Disable RLS (Simplified for Admin Panel)
+ALTER TABLE public.products DISABLE ROW LEVEL SECURITY;
+ALTER TABLE public.blogs DISABLE ROW LEVEL SECURITY;
+

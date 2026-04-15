@@ -86,7 +86,7 @@ export default function CartPage() {
                             {item.name}
                           </Link>
                           <p className="text-2xl font-bold text-primary mt-2">
-                            ₹{item.price.toFixed(2)}
+                            ${item.price.toFixed(2)}
                           </p>
 
                           {/* Quantity Control */}
@@ -115,7 +115,7 @@ export default function CartPage() {
                         {/* Total & Remove */}
                         <div className="text-right">
                           <p className="text-lg font-bold text-foreground mb-4">
-                            ₹{(item.price * item.quantity).toFixed(2)}
+                            ${(item.price * item.quantity).toFixed(2)}
                           </p>
                           <button
                             onClick={() => removeFromCart(item.id)}
@@ -179,13 +179,13 @@ export default function CartPage() {
                   <div className="space-y-3 mb-6">
                     <div className="flex justify-between text-foreground">
                       <span>Subtotal</span>
-                      <span>₹{getSubtotal().toFixed(2)}</span>
+                      <span>${getSubtotal().toFixed(2)}</span>
                     </div>
 
                     {couponCode && (
                       <div className="flex justify-between text-red-600 font-semibold">
                         <span>Discount ({couponCode})</span>
-                        <span>-₹{getDiscount().toFixed(2)}</span>
+                        <span>-${getDiscount().toFixed(2)}</span>
                       </div>
                     )}
 
@@ -196,7 +196,7 @@ export default function CartPage() {
 
                     <div className="border-t border-border pt-3 flex justify-between text-xl font-bold text-foreground">
                       <span>Total</span>
-                      <span className="text-primary">₹{getCartTotal().toFixed(2)}</span>
+                      <span className="text-primary">${getCartTotal().toFixed(2)}</span>
                     </div>
                   </div>
 

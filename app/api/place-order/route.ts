@@ -32,8 +32,8 @@ export async function POST(req: Request) {
       line_items: [
         {
           price_data: {
-            currency: 'inr',
-            unit_amount: Math.round(total * 100), // Stripe uses paise
+            currency: 'usd',
+            unit_amount: Math.round(total * 100), // Stripe uses cents
             product_data: {
               name: `Believe Pharma Order #${shortOrderId}`,
               description: cart
@@ -107,7 +107,7 @@ export async function POST(req: Request) {
       <tr>
         <td style="padding: 10px; border-bottom: 1px solid #ddd;">${item.name}</td>
         <td style="padding: 10px; border-bottom: 1px solid #ddd; text-align: center;">${item.quantity}</td>
-        <td style="padding: 10px; border-bottom: 1px solid #ddd; text-align: right;">₹${(item.price * item.quantity).toFixed(2)}</td>
+        <td style="padding: 10px; border-bottom: 1px solid #ddd; text-align: right;">$${(item.price * item.quantity).toFixed(2)}</td>
       </tr>
     `
       )
@@ -134,21 +134,21 @@ export async function POST(req: Request) {
           <tfoot>
             <tr>
               <td colspan="2" style="padding: 10px; text-align: right; font-weight: bold;">Subtotal:</td>
-              <td style="padding: 10px; text-align: right;">₹${subtotal.toFixed(2)}</td>
+              <td style="padding: 10px; text-align: right;">$$${subtotal.toFixed(2)}</td>
             </tr>
             ${
               discount > 0
                 ? `
             <tr>
               <td colspan="2" style="padding: 10px; text-align: right; font-weight: bold; color: #d9534f;">Discount:</td>
-              <td style="padding: 10px; text-align: right; color: #d9534f;">-₹${discount.toFixed(2)}</td>
+              <td style="padding: 10px; text-align: right; color: #d9534f;">-$$${discount.toFixed(2)}</td>
             </tr>
             `
                 : ''
             }
             <tr>
               <td colspan="2" style="padding: 10px; text-align: right; font-weight: bold;">Total:</td>
-              <td style="padding: 10px; text-align: right; font-weight: bold; font-size: 16px;">₹${total.toFixed(2)}</td>
+              <td style="padding: 10px; text-align: right; font-weight: bold; font-size: 16px;">$$${total.toFixed(2)}</td>
             </tr>
           </tfoot>
         </table>
@@ -159,7 +159,7 @@ export async function POST(req: Request) {
             href="${stripePaymentUrl}"
             style="background-color: #4CAF50; color: white; padding: 12px 25px; text-decoration: none; border-radius: 5px; font-weight: bold;"
           >
-            Pay ₹${total.toFixed(2)} Securely via Stripe
+            Pay $$${total.toFixed(2)} Securely via Stripe
           </a>
         </div>
 

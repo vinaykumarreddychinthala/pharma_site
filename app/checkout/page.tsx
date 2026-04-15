@@ -21,7 +21,7 @@ export default function CheckoutPage() {
     city: '',
     state: '',
     zipCode: '',
-    country: 'India',
+    country: 'United States',
   })
 
   if (cart.length === 0 && !orderPlaced) {
@@ -64,7 +64,7 @@ export default function CheckoutPage() {
                   </div>
                   <div>
                     <p className="text-sm text-muted-foreground mb-2">Total Amount</p>
-                    <p className="text-lg font-bold text-primary">₹{placedOrderDetails?.total.toFixed(2)}</p>
+                    <p className="text-lg font-bold text-primary">${placedOrderDetails?.total.toFixed(2)}</p>
                   </div>
                   <div>
                     <p className="text-sm text-muted-foreground mb-2">Items</p>
@@ -82,7 +82,7 @@ export default function CheckoutPage() {
                     {placedOrderDetails?.items.map((item: any) => (
                       <div key={item.id} className="flex justify-between">
                         <span>{item.name} x {item.quantity}</span>
-                        <span>₹{(item.price * item.quantity).toFixed(2)}</span>
+                        <span>${(item.price * item.quantity).toFixed(2)}</span>
                       </div>
                     ))}
                   </div>
@@ -228,7 +228,7 @@ export default function CheckoutPage() {
                         name="phone"
                         value={formData.phone}
                         onChange={handleChange}
-                        placeholder="+91 98765 43210"
+                        placeholder="+1 000 000 0000"
                         className="w-full px-4 py-2 border border-border rounded-lg text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
                         required
                       />
@@ -261,7 +261,7 @@ export default function CheckoutPage() {
                           name="city"
                           value={formData.city}
                           onChange={handleChange}
-                          placeholder="Mumbai"
+                          placeholder="New York"
                           className="w-full px-4 py-2 border border-border rounded-lg text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
                           required
                         />
@@ -275,7 +275,7 @@ export default function CheckoutPage() {
                           name="state"
                           value={formData.state}
                           onChange={handleChange}
-                          placeholder="Maharashtra"
+                          placeholder="NY"
                           className="w-full px-4 py-2 border border-border rounded-lg text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
                           required
                         />
@@ -289,7 +289,7 @@ export default function CheckoutPage() {
                           name="zipCode"
                           value={formData.zipCode}
                           onChange={handleChange}
-                          placeholder="400001"
+                          placeholder="10001"
                           className="w-full px-4 py-2 border border-border rounded-lg text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
                           required
                         />
@@ -307,7 +307,13 @@ export default function CheckoutPage() {
                         onChange={handleChange}
                         className="w-full px-4 py-2 border border-border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
                       >
-                        <option>India</option>
+                        <option>United States</option>
+                         <option>Canada</option>
+                         <option>United Kingdom</option>
+                         <option>Australia</option>
+                         <option>Germany</option>
+                         <option>France</option>
+                         <option>Other</option>
                       </select>
                     </div>
 
@@ -331,7 +337,7 @@ export default function CheckoutPage() {
                           <p className="font-semibold text-foreground">{item.name}</p>
                           <p className="text-muted-foreground">Qty: {item.quantity}</p>
                         </div>
-                        <p className="font-semibold text-foreground">₹{(item.price * item.quantity).toFixed(2)}</p>
+                        <p className="font-semibold text-foreground">${(item.price * item.quantity).toFixed(2)}</p>
                       </div>
                     ))}
                   </div>
@@ -339,12 +345,12 @@ export default function CheckoutPage() {
                   <div className="space-y-3">
                     <div className="flex justify-between text-foreground">
                       <span>Subtotal</span>
-                      <span>₹{getSubtotal().toFixed(2)}</span>
+                      <span>${getSubtotal().toFixed(2)}</span>
                     </div>
                     {getDiscount() > 0 && (
                       <div className="flex justify-between text-red-600 font-semibold">
                         <span>Discount</span>
-                        <span>-₹{getDiscount().toFixed(2)}</span>
+                        <span>-${getDiscount().toFixed(2)}</span>
                       </div>
                     )}
                     <div className="flex justify-between text-sm text-muted-foreground">
@@ -353,7 +359,7 @@ export default function CheckoutPage() {
                     </div>
                     <div className="border-t border-border pt-3 flex justify-between text-xl font-bold text-foreground">
                       <span>Total</span>
-                      <span className="text-primary">₹{getCartTotal().toFixed(2)}</span>
+                      <span className="text-primary">${getCartTotal().toFixed(2)}</span>
                     </div>
                   </div>
                 </div>

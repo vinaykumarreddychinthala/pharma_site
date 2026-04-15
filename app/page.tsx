@@ -29,13 +29,13 @@ export default function Home() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
               <div className="space-y-6">
                 <div className="inline-block bg-primary-foreground/20 backdrop-blur-sm text-primary-foreground px-4 py-2 rounded-full text-sm font-semibold">
-                  ✨ Trusted by 50,000+ Happy Customers
+                  ✨ Trusted by 40,000+ Happy Clients Worldwide
                 </div>
                 <h1 className="text-5xl md:text-6xl font-bold text-primary-foreground mb-4 leading-tight tracking-tight">
-                  Your <span className="bg-gradient-to-r from-primary-foreground to-primary-foreground/80 bg-clip-text text-transparent">Health</span> is Our Priority
+                  Your <span className="bg-gradient-to-r from-primary-foreground to-primary-foreground/80 bg-clip-text text-transparent">Confidence</span> is Our Priority
                 </h1>
                 <p className="text-lg text-primary-foreground/95 mb-8 leading-relaxed">
-                  Access quality medicines with expert guidance, fast delivery, and unbeatable prices. Your wellness journey starts here.
+                  Access premium performance & wellness solutions — sourced globally, shipped discreetly. Feel confident, stay connected, enjoy life.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4 pt-4">
                   <Link href="/products" className="w-full sm:w-auto">
