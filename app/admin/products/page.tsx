@@ -5,15 +5,31 @@ import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { createProduct, deleteProduct } from '../actions'
-import { Trash2 } from 'lucide-react'
+import { Trash2, Edit } from 'lucide-react'
+import { ProductForm } from './product-form'
+import Link from 'next/link'
 
-export default async function AdminProductsPage() {
+export default async function AdminProductsPage({ 
+  searchParams 
+}: { 
+  searchParams: Promise<{ edit?: string }> 
+}) {
   try {
+    const { edit: editId } = await searchParams
     const supabase = await createClient()
+    
+    // Fetch all products
     const { data: products, error: fetchError } = await supabase.from('products').select('*').order('created_at', { ascending: false })
 
     if (fetchError) {
       throw new Error(`Database Error: ${fetchError.message}`)
+    }
+
+    // Fetch product to edit if requested
+    let editingProduct = null
+    if (editId) {
+      const { data } = await supabase.from('products').select('*').eq('id', editId).single()
+      editingProduct = data
     }
 
     return (
@@ -24,50 +40,9 @@ export default async function AdminProductsPage() {
       </div>
 
       <div className="grid gap-8 md:grid-cols-12">
-        {/* Form to Add Product */}
+        {/* Form to Add/Edit Product */}
         <div className="md:col-span-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Add New Product</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <form action={createProduct} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="name">Product Name</Label>
-                  <Input id="name" name="name" required />
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="description">Short Description</Label>
-                  <Textarea id="description" name="description" required className="resize-none" rows={3}/>
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="price">Price (USD)</Label>
-                    <Input id="price" name="price" type="number" step="0.01" required />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="stock">Initial Stock</Label>
-                    <Input id="stock" name="stock" type="number" defaultValue="100" required />
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="category">Category</Label>
-                  <Input id="category" name="category" placeholder="e.g. ED Treatment" required />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="image">Product Image</Label>
-                  <Input id="image" name="image" type="file" accept="image/*" required className="cursor-pointer file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20" />
-                  <p className="text-[10px] text-muted-foreground mt-1 px-1">Upload a high-quality JPG or PNG from your computer.</p>
-                </div>
-
-                <Button type="submit" className="w-full">Create Product</Button>
-              </form>
-            </CardContent>
-          </Card>
+          <ProductForm initialData={editingProduct} />
         </div>
 
         {/* List of Products */}
@@ -88,14 +63,21 @@ export default async function AdminProductsPage() {
                           <p className="text-sm text-muted-foreground">{product.category} • ${product.price} • Stock: {product.stock}</p>
                         </div>
                       </div>
-                      <form action={async () => {
-                        'use server'
-                        await deleteProduct(product.id)
-                      }}>
-                        <Button type="submit" variant="destructive" size="icon">
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </form>
+                      <div className="flex gap-2">
+                        <Link href={`/admin/products?edit=${product.id}`}>
+                          <Button variant="outline" size="sm" className="h-9 w-9 p-0">
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                        </Link>
+                        <form action={async () => {
+                          'use server'
+                          await deleteProduct(product.id)
+                        }}>
+                          <Button type="submit" variant="destructive" size="icon" className="h-9 w-9">
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </form>
+                      </div>
                     </div>
                   ))
                 ) : (

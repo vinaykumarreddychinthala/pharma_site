@@ -5,15 +5,31 @@ import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { createBlog, deleteBlog } from '../actions'
-import { Trash2 } from 'lucide-react'
+import { Trash2, Edit } from 'lucide-react'
+import { BlogForm } from './blog-form'
+import Link from 'next/link'
 
-export default async function AdminBlogsPage() {
+export default async function AdminBlogsPage({ 
+  searchParams 
+}: { 
+  searchParams: Promise<{ edit?: string }> 
+}) {
   try {
+    const { edit: editId } = await searchParams
     const supabase = await createClient()
+    
+    // Fetch all blogs
     const { data: blogs, error: fetchError } = await supabase.from('blogs').select('*').order('created_at', { ascending: false })
 
     if (fetchError) {
       throw new Error(`Database Error: ${fetchError.message}`)
+    }
+
+    // Fetch blog to edit if requested
+    let editingBlog = null
+    if (editId) {
+      const { data } = await supabase.from('blogs').select('*').eq('id', editId).single()
+      editingBlog = data
     }
 
     return (
@@ -24,50 +40,9 @@ export default async function AdminBlogsPage() {
       </div>
 
       <div className="grid gap-8 md:grid-cols-12">
-        {/* Form to Add Blog */}
+        {/* Form to Add/Edit Blog */}
         <div className="md:col-span-5">
-          <Card>
-            <CardHeader>
-              <CardTitle>Write New Post</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <form action={createBlog} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="title">Post Title</Label>
-                  <Input id="title" name="title" required />
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="excerpt">Excerpt (Short Summary)</Label>
-                  <Textarea id="excerpt" name="excerpt" required className="resize-none" rows={2}/>
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="author">Author</Label>
-                    <Input id="author" name="author" defaultValue="Believe Pharma Team" required />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="category">Category</Label>
-                    <Input id="category" name="category" placeholder="e.g. ED Treatment" required />
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="image">Featured Image</Label>
-                  <Input id="image" name="image" type="file" accept="image/*" className="cursor-pointer file:mr-4 file:py-1 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20" />
-                  <p className="text-[10px] text-muted-foreground mt-1 px-1">Optional. Upload an image for the blog post header.</p>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="content">Full Content (Markdown supported)</Label>
-                  <Textarea id="content" name="content" className="font-mono text-sm" rows={12} required />
-                </div>
-
-                <Button type="submit" className="w-full">Publish Post</Button>
-              </form>
-            </CardContent>
-          </Card>
+          <BlogForm initialData={editingBlog} />
         </div>
 
         {/* List of Blogs */}
@@ -92,14 +67,21 @@ export default async function AdminBlogsPage() {
                           <span className="font-semibold text-primary">{blog.category}</span>
                         </div>
                       </div>
-                      <form action={async () => {
-                        'use server'
-                        await deleteBlog(blog.id)
-                      }}>
-                        <Button type="submit" variant="ghost" size="icon" className="text-red-500 hover:text-red-600 hover:bg-red-50 ml-4 shrink-0">
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </form>
+                      <div className="flex gap-2 ml-4 shrink-0">
+                        <Link href={`/admin/blogs?edit=${blog.id}`}>
+                          <Button variant="ghost" size="icon" className="text-primary hover:text-primary hover:bg-primary/5">
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                        </Link>
+                        <form action={async () => {
+                          'use server'
+                          await deleteBlog(blog.id)
+                        }}>
+                          <Button type="submit" variant="ghost" size="icon" className="text-red-500 hover:text-red-600 hover:bg-red-50">
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </form>
+                      </div>
                     </div>
                   ))
                 ) : (

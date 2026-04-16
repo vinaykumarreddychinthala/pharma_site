@@ -15,6 +15,9 @@ export async function GET() {
     // Actually, local storage cart will break if IDs change. That's a known trade-off when moving to real UUIDs.
     
     name: p.name,
+    slug: p.slug || null,
+    title: p.title || null,
+    overview: p.overview || null,
     description: p.description,
     price: p.price,
     image: p.image,
@@ -22,6 +25,19 @@ export async function GET() {
     stock: p.stock,
     full_description: p.fullDescription || null,
     tablets_count: p.tabletsCount || null,
+    composition: p.composition || {},
+    how_it_works: p.howItWorks || null,
+    uses: p.uses || [],
+    dosage: p.dosage || [],
+    effects: p.effects || {},
+    usage_instructions: p.usage || [],
+    side_effects: p.sideEffects || {},
+    precautions: p.precautions || [],
+    storage: p.storage || null,
+    faqs: p.faqs || [],
+    reviews_enabled: p.reviewsEnabled !== false,
+    shipping_info: p.shippingInfo || null,
+    cta: p.cta || {},
     packs: p.packs || [],
     shipping_options: p.shippingOptions || [],
     how_to_use: p.howToUse || [],
@@ -45,10 +61,17 @@ export async function GET() {
   // 2. Migrate Blogs
   const blogsToInsert = blogPosts.map((b) => ({
     title: b.title,
+    slug: b.slug || null,
     excerpt: b.excerpt,
+    intro: b.intro || null,
+    sections: b.sections || [],
+    faq: b.faq || [],
+    related_products: b.relatedProducts || [],
+    conclusion: b.conclusion || null,
     content: b.content,
     date: b.date,
     author: b.author,
+    reviewed_by: b.reviewedBy || null,
     category: b.category,
   }))
 

@@ -12,6 +12,9 @@ export interface ShippingOption {
 export interface Product {
   id: string
   name: string
+  slug?: string
+  title?: string
+  overview?: string
   description: string
   price: number
   image: string
@@ -19,6 +22,37 @@ export interface Product {
   stock: number
   fullDescription?: string
   tabletsCount?: number
+  composition?: {
+    activeIngredient: string
+    drugClass: string
+  }
+  howItWorks?: string
+  uses?: string[]
+  dosage?: {
+    strength: string
+    price: string
+  }[]
+  effects?: {
+    startTime: string
+    duration: string
+  }
+  usage?: string[]
+  sideEffects?: {
+    common: string[]
+    serious: string[]
+  }
+  precautions?: string[]
+  storage?: string
+  faqs?: {
+    question: string
+    answer: string
+  }[]
+  reviewsEnabled?: boolean
+  shippingInfo?: string
+  cta?: {
+    primary: string
+    secondary: string
+  }
   packs?: ProductPack[]
   shippingOptions?: ShippingOption[]
   howToUse?: string[]

@@ -1,11 +1,25 @@
 export interface BlogPost {
   id: string;
   title: string;
+  slug?: string;
   excerpt: string;
+  intro?: string;
+  sections?: {
+    heading: string;
+    content: string;
+  }[];
+  faq?: {
+    question: string;
+    answer: string;
+  }[];
+  relatedProducts?: string[];
+  conclusion?: string;
   content: string;
   date: string;
   author: string;
+  reviewedBy?: string;
   category: string;
+  image?: string;
 }
 
 export const blogPosts: BlogPost[] = [

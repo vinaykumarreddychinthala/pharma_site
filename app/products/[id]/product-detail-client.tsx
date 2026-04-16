@@ -138,10 +138,26 @@ export function ProductDetailClient({ product }: { product: Product }) {
                     )}
                   </div>
                   <h1 className="text-4xl lg:text-5xl font-black text-foreground mb-4 tracking-tight">
-                    {product.name}
+                    {product.title || product.name}
                   </h1>
+                  
+                  {product.composition && (product.composition.activeIngredient || product.composition.drugClass) && (
+                    <div className="flex flex-wrap gap-3 mb-6">
+                      {product.composition.activeIngredient && (
+                        <div className="inline-flex items-center text-xs font-semibold px-3 py-1.5 rounded-md bg-muted/40 text-muted-foreground border border-border">
+                          <span className="opacity-70 mr-1">Active Ingredient:</span> {product.composition.activeIngredient}
+                        </div>
+                      )}
+                      {product.composition.drugClass && (
+                        <div className="inline-flex items-center text-xs font-semibold px-3 py-1.5 rounded-md bg-muted/40 text-muted-foreground border border-border">
+                          <span className="opacity-70 mr-1">Class:</span> {product.composition.drugClass}
+                        </div>
+                      )}
+                    </div>
+                  )}
+
                   <p className="text-lg text-muted-foreground leading-relaxed">
-                    {product.description}
+                    {product.overview || product.description}
                   </p>
                 </div>
 
@@ -280,7 +296,7 @@ export function ProductDetailClient({ product }: { product: Product }) {
                           >
                             −
                           </button>
-                          <span className="w-12 text-center font-bold text-foreground">
+                          <span className="w-12 text-center font-bold text-foreground inline-flex items-center justify-center">
                             {quantity}
                           </span>
                           <button
@@ -293,10 +309,10 @@ export function ProductDetailClient({ product }: { product: Product }) {
                         <Button
                           onClick={handleBaseAddToCart}
                           size="lg"
-                          className="flex-1 sm:flex-none h-12 rounded-xl bg-primary text-primary-foreground font-bold shadow-md hover:shadow-lg"
+                          className="flex-1 sm:flex-none h-12 rounded-xl bg-primary text-primary-foreground font-bold shadow-md hover:shadow-lg transition-all"
                         >
                           <ShoppingCart className="h-5 w-5 mr-2" />
-                          Add to Cart
+                          {product.cta?.primary || 'Add to Cart'}
                         </Button>
                       </div>
                     )}
@@ -304,21 +320,31 @@ export function ProductDetailClient({ product }: { product: Product }) {
                 )}
 
                 {/* Shipping Options */}
-                {product.shippingOptions && product.shippingOptions.length > 0 && (
-                  <div className="mb-6 bg-card rounded-2xl border border-border p-5 shadow-sm">
-                    <div className="flex items-center gap-2 mb-4">
-                      <Package className="h-5 w-5 text-primary" />
-                      <h3 className="font-bold text-foreground">Shipping Options</h3>
+                {product.shippingInfo ? (
+                   <div className="mb-6 bg-card rounded-2xl border border-border p-5 shadow-sm">
+                      <div className="flex items-center gap-2 mb-3">
+                        <Package className="h-5 w-5 text-primary" />
+                        <h3 className="font-bold text-foreground">Shipping Information</h3>
+                      </div>
+                      <p className="text-sm font-medium text-muted-foreground">{product.shippingInfo}</p>
+                   </div>
+                ) : (
+                  product.shippingOptions && product.shippingOptions.length > 0 && (
+                    <div className="mb-6 bg-card rounded-2xl border border-border p-5 shadow-sm">
+                      <div className="flex items-center gap-2 mb-4">
+                        <Package className="h-5 w-5 text-primary" />
+                        <h3 className="font-bold text-foreground">Shipping Options</h3>
+                      </div>
+                      <div className="grid grid-cols-2 gap-3">
+                        {product.shippingOptions.map((option, i) => (
+                          <div key={i} className="flex items-center justify-between p-3 bg-muted/30 rounded-xl border border-border/50">
+                            <span className="text-sm font-semibold text-foreground">{option.quantity}</span>
+                            <span className="text-sm font-bold text-primary">${option.price}</span>
+                          </div>
+                        ))}
+                      </div>
                     </div>
-                    <div className="grid grid-cols-2 gap-3">
-                      {product.shippingOptions.map((option, i) => (
-                        <div key={i} className="flex items-center justify-between p-3 bg-muted/30 rounded-xl border border-border/50">
-                          <span className="text-sm font-semibold text-foreground">{option.quantity}</span>
-                          <span className="text-sm font-bold text-primary">${option.price}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
+                  )
                 )}
 
                 {/* Bulk Order Banner */}
@@ -371,6 +397,7 @@ export function ProductDetailClient({ product }: { product: Product }) {
                       ? 'border-primary text-primary' 
                       : 'border-transparent text-muted-foreground hover:text-foreground hover:bg-muted/20'
                   }`}
+                  style={{ display: product.reviewsEnabled !== false ? 'flex' : 'none' }}
                 >
                   Reviews 
                   {product.reviews && product.reviews.length > 0 && (
@@ -421,26 +448,112 @@ export function ProductDetailClient({ product }: { product: Product }) {
                     </p>
                   </div>
 
-                  {/* How to Use */}
-                  {product.howToUse && product.howToUse.length > 0 && (
-                    <div className="mt-8 p-6 bg-muted/20 rounded-2xl border border-border">
-                      <h3 className="font-bold text-foreground text-xl mb-4">📝 How to Use</h3>
-                      <ol className="space-y-3">
-                        {product.howToUse.map((step, i) => (
-                          <li key={i} className="flex items-start gap-3 text-muted-foreground">
-                            <span className="h-6 w-6 rounded-full bg-primary/10 text-primary text-xs font-bold flex items-center justify-center flex-shrink-0 mt-0.5">
-                              {i + 1}
-                            </span>
-                            {step}
-                          </li>
-                        ))}
-                      </ol>
+                  {/* Advanced Medical & Technical Fields via Accordions/Layouts */}
+                  <div className="mt-12 space-y-8">
+                    {/* How It Works & Uses Flex */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                      {product.howItWorks && (
+                         <div className="p-6 bg-primary/5 rounded-2xl border border-primary/10">
+                           <h3 className="font-bold text-foreground text-xl mb-4">Mechanism of Action</h3>
+                           <p className="text-muted-foreground leading-relaxed">{product.howItWorks}</p>
+                         </div>
+                      )}
+                      
+                      {product.uses && product.uses.length > 0 && (
+                        <div>
+                          <h3 className="font-bold text-foreground text-xl mb-4">Primary Uses</h3>
+                          <ul className="space-y-2">
+                             {product.uses.map((use, i) => (
+                               <li key={i} className="flex items-start gap-2.5 text-muted-foreground">
+                                 <CheckCircle className="h-5 w-5 text-green-500 shrink-0" />
+                                 <span>{use}</span>
+                               </li>
+                             ))}
+                          </ul>
+                        </div>
+                      )}
                     </div>
-                  )}
 
-                  <div className="mt-6">
-                    <p className="leading-relaxed text-muted-foreground">
-                      We ensure that every batch meets rigorous quality standards before reaching you. Whether you're managing performance needs or exploring new experiences, you can rely on the quality and safety of {product.name}.
+                    {/* How to Use / Usage Guidelines (Merged check) */}
+                    {((product.howToUse && product.howToUse.length > 0) || (product.usage && product.usage.length > 0)) && (
+                      <div className="p-6 bg-muted/20 rounded-2xl border border-border">
+                        <h3 className="font-bold text-foreground text-xl mb-4">📝 Usage Guidelines & Instructions</h3>
+                        <ol className="space-y-4">
+                          {(product.usage && product.usage.length > 0 ? product.usage : (product.howToUse || [])).map((step: string, i: number) => (
+                            <li key={i} className="flex items-start gap-3 text-muted-foreground">
+                              <span className="h-6 w-6 rounded-full bg-primary/10 text-primary text-xs font-bold flex items-center justify-center flex-shrink-0 mt-0.5">
+                                {i + 1}
+                              </span>
+                              <span className="leading-relaxed">{step}</span>
+                            </li>
+                          ))}
+                        </ol>
+                      </div>
+                    )}
+
+                    {/* Safety Informational Accordions */}
+                    <div className="space-y-3 pt-6 border-t border-border">
+                      <h3 className="font-bold text-foreground text-2xl mb-6">Safety & Medical Information</h3>
+                      
+                      {product.sideEffects && (product.sideEffects.common?.length > 0 || product.sideEffects.serious?.length > 0) && (
+                        <details className="group bg-card border border-border rounded-xl">
+                          <summary className="cursor-pointer font-bold px-6 py-4 list-none flex justify-between items-center text-foreground hover:bg-muted/10 transition-colors rounded-xl">
+                            <span className="flex items-center gap-3"><ShieldCheck className="w-5 h-5 text-amber-500" /> Possible Side Effects</span>
+                            <span className="transition-transform duration-300 group-open:rotate-180 opacity-50">▼</span>
+                          </summary>
+                          <div className="px-6 pb-6 pt-2 grid grid-cols-1 md:grid-cols-2 gap-6 border-t border-border mt-2 pt-4">
+                            {product.sideEffects.common?.length > 0 && (
+                              <div>
+                                <h4 className="font-bold text-sm text-foreground mb-3 text-amber-600">Common Effects</h4>
+                                <ul className="list-disc pl-5 space-y-1 text-sm text-muted-foreground">
+                                  {product.sideEffects.common.map((ef: string, i: number) => <li key={i}>{ef}</li>)}
+                                </ul>
+                              </div>
+                            )}
+                            {product.sideEffects.serious?.length > 0 && (
+                              <div>
+                                <h4 className="font-bold text-sm text-foreground mb-3 text-red-600">Serious Effects (Seek Help)</h4>
+                                <ul className="list-disc pl-5 space-y-1 text-sm text-muted-foreground">
+                                  {product.sideEffects.serious.map((ef: string, i: number) => <li key={i}>{ef}</li>)}
+                                </ul>
+                              </div>
+                            )}
+                          </div>
+                        </details>
+                      )}
+
+                      {product.precautions && product.precautions.length > 0 && (
+                        <details className="group bg-card border border-border rounded-xl">
+                          <summary className="cursor-pointer font-bold px-6 py-4 list-none flex justify-between items-center text-foreground hover:bg-muted/10 transition-colors rounded-xl">
+                            <span className="flex items-center gap-3"><Zap className="w-5 h-5 text-primary" /> Precautions & Warnings</span>
+                            <span className="transition-transform duration-300 group-open:rotate-180 opacity-50">▼</span>
+                          </summary>
+                          <div className="px-6 pb-6 pt-4 border-t border-border mt-2">
+                            <ul className="list-disc pl-5 space-y-2 text-muted-foreground">
+                              {product.precautions.map((pre: string, i: number) => <li key={i} className="leading-relaxed">{pre}</li>)}
+                            </ul>
+                          </div>
+                        </details>
+                      )}
+
+                      {product.storage && (
+                        <details className="group bg-card border border-border rounded-xl">
+                          <summary className="cursor-pointer font-bold px-6 py-4 list-none flex justify-between items-center text-foreground hover:bg-muted/10 transition-colors rounded-xl">
+                            <span className="flex items-center gap-3"><Package className="w-5 h-5 text-muted-foreground" /> Storage Instructions</span>
+                            <span className="transition-transform duration-300 group-open:rotate-180 opacity-50">▼</span>
+                          </summary>
+                          <div className="px-6 pb-6 pt-4 border-t border-border mt-2">
+                             <p className="text-muted-foreground leading-relaxed">{product.storage}</p>
+                          </div>
+                        </details>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="mt-12 text-center">
+                    <p className="text-sm font-medium text-muted-foreground bg-muted/30 p-4 rounded-xl inline-block max-w-2xl mx-auto border border-border">
+                      <strong className="block text-foreground mb-1">Disclaimer</strong>
+                      This information is not a substitute for professional medical advice. Always consult a healthcare provider before beginning any new treatment. We ensure that every batch meets rigorous quality standards before reaching you.
                     </p>
                   </div>
                 </div>
@@ -483,6 +596,31 @@ export function ProductDetailClient({ product }: { product: Product }) {
             </div>
           </div>
         </section>
+
+        {/* Product FAQs Section */}
+        {product.faqs && product.faqs.length > 0 && (
+          <section className="py-16 bg-muted/10 border-t border-border">
+            <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+              <div className="text-center mb-10">
+                <h2 className="text-3xl font-black text-foreground mb-4">Frequently Asked Questions</h2>
+                <p className="text-muted-foreground text-lg">Find answers to common questions about {product.name}</p>
+              </div>
+              <div className="space-y-4">
+                {product.faqs.map((faq, i) => (
+                  <details key={`faq-${i}`} className="group bg-card border border-border rounded-2xl shadow-sm">
+                    <summary className="cursor-pointer font-bold px-6 py-5 list-none flex justify-between items-center text-foreground hover:text-primary transition-colors">
+                      <span className="text-lg pr-8">{faq.question}</span>
+                      <span className="transition-transform duration-300 group-open:rotate-180 flex-shrink-0 text-primary">▼</span>
+                    </summary>
+                    <div className="px-6 pb-6 pt-3 border-t border-border mt-1">
+                      <p className="text-muted-foreground leading-relaxed text-lg">{faq.answer}</p>
+                    </div>
+                  </details>
+                ))}
+              </div>
+            </div>
+          </section>
+        )}
       </main>
 
       <Footer />

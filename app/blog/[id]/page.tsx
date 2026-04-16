@@ -43,14 +43,19 @@ export default async function BlogPostPage({ params }: { params: Promise<{ id: s
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-black text-foreground mb-8 leading-tight tracking-tight">
               {post.title}
             </h1>
-            <div className="flex items-center justify-center gap-6 text-sm text-muted-foreground">
-              <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-muted-foreground">
+              <div className="flex items-center gap-3">
                 <div className="h-10 w-10 rounded-full bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center text-primary border border-primary/20">
                   <UserIcon className="h-5 w-5" />
                 </div>
-                <span className="font-semibold text-foreground/80">{post.author}</span>
+                <div className="flex flex-col text-left">
+                  <span className="font-semibold text-foreground/80">By {post.author}</span>
+                  {post.reviewed_by && (
+                    <span className="text-xs text-primary/80 font-medium">Reviewed by {post.reviewed_by}</span>
+                  )}
+                </div>
               </div>
-              <span className="w-1.5 h-1.5 rounded-full bg-border"></span>
+              <span className="hidden sm:block w-1.5 h-1.5 rounded-full bg-border"></span>
               <div className="flex items-center gap-2 font-medium">
                 <Calendar className="h-4 w-4" />
                 {post.date}
@@ -66,72 +71,100 @@ export default async function BlogPostPage({ params }: { params: Promise<{ id: s
           )}
 
           {/* Article Content */}
-          <div className="max-w-3xl mx-auto">
-            {post.content.split('\n\n').map((paragraph, index) => {
-              if (paragraph.trim().startsWith('**')) {
-                 const titleMatch = paragraph.match(/\*\*(.*?)\*\*/);
-                 if (titleMatch) {
-                    const title = titleMatch[1];
-                    const rest = paragraph.replace(/\*\*(.*?)\*\*/, '');
+          <div className="max-w-3xl mx-auto space-y-12 pb-16">
+            
+            {post.intro && (
+              <p className="text-xl font-medium text-foreground/90 leading-relaxed border-l-4 border-primary pl-6">
+                {post.intro}
+              </p>
+            )}
+
+            {post.sections && post.sections.length > 0 && (
+              <div className="space-y-10">
+                {post.sections.map((sec: any, i: number) => (
+                  <div key={`sec-${i}`}>
+                    {sec.heading && <h3 className="text-2xl font-bold text-foreground mb-4">{sec.heading}</h3>}
+                    <div className="text-muted-foreground leading-relaxed text-lg tracking-wide whitespace-pre-wrap">{sec.content}</div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Fallback Legacy Markdown if it exists and sections don't (or as additional content) */}
+            {post.content && (!post.sections || post.sections.length === 0) && (
+              <div className="space-y-10">
+                {post.content.split(/\n\n+/).map((paragraph: string, index: number) => {
+                  const trimmed = paragraph.trim();
+                  if (!trimmed) return null;
+
+                  if (trimmed.startsWith('**')) {
+                    const titleMatch = trimmed.match(/^\*\*(.*?)\*\*(.*)/s);
+                    if (titleMatch) {
+                      return (
+                        <div key={index}>
+                          <h3 className="text-2xl font-bold text-foreground mb-4">{titleMatch[1]}</h3>
+                          {titleMatch[2].trim() && (
+                            <p className="text-muted-foreground leading-relaxed text-lg tracking-wide whitespace-pre-wrap">{titleMatch[2].trim()}</p>
+                          )}
+                        </div>
+                      );
+                    }
+                  }
+
+                  if (trimmed.startsWith('- ')) {
                     return (
-                      <div key={index} className="mb-10">
-                         <h3 className="text-2xl font-bold text-foreground mb-4">{title}</h3>
-                         {rest.trim() && (
-                           <p className="text-muted-foreground leading-relaxed text-lg tracking-wide">{rest.trim()}</p>
-                         )}
-                      </div>
-                    )
-                 }
-              }
+                      <ul key={index} className="list-disc pl-6 space-y-4 text-lg">
+                        {trimmed.split('\n').map((part, i) => {
+                          if (!part.trim()) return null;
+                          const match = part.match(/^- (.*)/);
+                          return <li key={i} className="text-muted-foreground leading-relaxed">{match ? match[1] : part}</li>;
+                        })}
+                      </ul>
+                    );
+                  }
 
-              if (paragraph.trim().startsWith('- **')) {
-                const parts = paragraph.split('\n');
-                return (
-                  <ul key={index} className="list-disc pl-6 mb-10 space-y-4 text-lg">
-                    {parts.map((part, i) => {
-                      if (!part.trim()) return null;
-                      const match = part.match(/- \*\*(.*?)\*\*(.*)/);
-                      if (match) {
-                        return (
-                          <li key={i} className="text-muted-foreground leading-relaxed">
-                            <strong className="text-foreground">{match[1]}</strong>{match[2]}
-                          </li>
-                        )
-                      }
-                      return <li key={i} className="text-muted-foreground leading-relaxed">{part.replace('- ', '')}</li>
-                    })}
-                  </ul>
-                )
-              }
-              
-              if (paragraph.trim().match(/^\d+\.\s\*\*/)) {
-                const parts = paragraph.split('\n');
-                return (
-                  <ol key={index} className="list-decimal pl-6 mb-10 space-y-4 text-lg">
-                    {parts.map((part, i) => {
-                       if (!part.trim()) return null;
-                       const match = part.match(/^\d+\.\s\*\*(.*?)\*\*(.*)/);
-                       if (match) {
-                         return (
-                           <li key={i} className="text-muted-foreground leading-relaxed">
-                             <strong className="text-foreground">{match[1]}</strong>{match[2]}
-                           </li>
-                         )
-                       }
-                       return <li key={i} className="text-muted-foreground leading-relaxed">{part.replace(/^\d+\.\s/, '')}</li>
-                    })}
-                  </ol>
-                )
-              }
+                  if (trimmed.match(/^\d+\.\s/)) {
+                    return (
+                      <ol key={index} className="list-decimal pl-6 space-y-4 text-lg">
+                        {trimmed.split('\n').map((part, i) => {
+                           if (!part.trim()) return null;
+                           const match = part.match(/^\d+\.\s(.*)/);
+                           return <li key={i} className="text-muted-foreground leading-relaxed">{match ? match[1] : part}</li>;
+                        })}
+                      </ol>
+                    );
+                  }
 
-              if (!paragraph.trim()) return null;
+                  return (
+                    <p key={index} className="text-muted-foreground leading-relaxed text-lg tracking-wide whitespace-pre-wrap">
+                      {trimmed}
+                    </p>
+                  )
+                })}
+              </div>
+            )}
 
-              return (
-                <p key={index} className="text-muted-foreground leading-relaxed text-lg tracking-wide mb-10">
-                  {paragraph.trim()}
-                </p>
-              )
-            })}
+            {post.conclusion && (
+              <div className="bg-primary/5 p-8 rounded-2xl border border-primary/20 mt-12">
+                <h3 className="text-xl font-bold text-foreground mb-3">Final Thoughts</h3>
+                <p className="text-lg text-muted-foreground leading-relaxed">{post.conclusion}</p>
+              </div>
+            )}
+
+            {post.faq && post.faq.length > 0 && (
+              <div className="mt-16 bg-muted/20 p-8 rounded-3xl border border-border">
+                <h3 className="text-2xl font-bold text-foreground mb-8">Frequently Asked Questions</h3>
+                <div className="space-y-6 lg:space-y-8">
+                  {post.faq.map((item: any, i: number) => (
+                    <div key={`faq-${i}`} className="border-b border-border/50 pb-6 last:border-0 last:pb-0">
+                      <h4 className="font-bold text-lg text-foreground mb-2 flex gap-3"><span className="text-primary font-black">Q:</span> {item.question}</h4>
+                      <p className="text-muted-foreground pl-6"><span className="text-foreground font-semibold mr-1">A:</span> {item.answer}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
           </div>
         </article>
       </main>
