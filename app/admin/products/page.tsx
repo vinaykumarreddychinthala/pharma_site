@@ -60,7 +60,7 @@ export default async function AdminProductsPage({
                         <img src={product.image} alt={product.name} className="w-12 h-12 object-contain bg-white rounded-md border" />
                         <div>
                           <p className="font-bold">{product.name}</p>
-                          <p className="text-sm text-muted-foreground">{product.category} • ${product.price} • Stock: {product.stock}</p>
+                          <p className="text-sm text-muted-foreground">{product.category} • Stock: {product.stock}</p>
                         </div>
                       </div>
                       <div className="flex gap-2">

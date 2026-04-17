@@ -11,7 +11,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { formData, cart, subtotal, discount, total } = body;
+    const { formData, cart, subtotal, discount, shippingAmount, total } = body;
     const senderEmail = process.env.SENDER_EMAIL_ID || 'orders@yourcustomdomain.com';
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://believepharma.shop';
 
@@ -141,14 +141,18 @@ export async function POST(req: Request) {
                 ? `
             <tr>
               <td colspan="2" style="padding: 10px; text-align: right; font-weight: bold; color: #d9534f;">Discount:</td>
-              <td style="padding: 10px; text-align: right; color: #d9534f;">-$$${discount.toFixed(2)}</td>
+              <td style="padding: 10px; text-align: right; color: #d9534f;">-$${discount.toFixed(2)}</td>
             </tr>
             `
                 : ''
             }
             <tr>
+              <td colspan="2" style="padding: 10px; text-align: right; font-weight: bold;">Shipping:</td>
+              <td style="padding: 10px; text-align: right;">$${shippingAmount.toFixed(2)}</td>
+            </tr>
+            <tr>
               <td colspan="2" style="padding: 10px; text-align: right; font-weight: bold;">Total:</td>
-              <td style="padding: 10px; text-align: right; font-weight: bold; font-size: 16px;">$$${total.toFixed(2)}</td>
+              <td style="padding: 10px; text-align: right; font-weight: bold; font-size: 16px;">$${total.toFixed(2)}</td>
             </tr>
           </tfoot>
         </table>

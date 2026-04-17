@@ -15,6 +15,9 @@ export function ProductDetailClient({ product }: { product: Product }) {
   const [quantity, setQuantity] = useState(1)
   const [packQuantities, setPackQuantities] = useState<Record<string, number>>({})
   const [activeTab, setActiveTab] = useState<'description' | 'reviews'>('description')
+  
+  const displayPacks = (product?.packs || []) as ProductPack[];
+  const hasPacks = displayPacks.length > 0;
 
   const { addToCart, addToWishlist, removeFromWishlist, isInWishlist } = useCart()
 
@@ -46,30 +49,42 @@ export function ProductDetailClient({ product }: { product: Product }) {
         name: product.name,
         price: product.price,
         image: product.image,
+        pillsCount: 0,
       })
     }
     setQuantity(1)
   }
 
   const handlePackAddToCart = (pack: ProductPack) => {
-    const qty = packQuantities[pack.size] || 1
+    const packKey = `${pack.size}-${pack.pills || ''}`
+    const qty = packQuantities[packKey] || 1
+    
+    const currentPackPriceRaw = pack.price || 0;
+    const currentPackPriceNum = typeof currentPackPriceRaw === 'number' 
+      ? currentPackPriceRaw 
+      : parseFloat(String(currentPackPriceRaw).replace(/[^0-9.]/g, '')) || 0;
+
+    const pillsRaw = pack.pills || '';
+    const pillsNum = parseInt(pillsRaw.replace(/[^0-9]/g, '')) || 0;
+
     for (let i = 0; i < qty; i++) {
       addToCart({
-        id: `${product.id}-${pack.size}`,
-        name: `${product.name} (${pack.size})`,
-        price: pack.price,
+        id: `${product.id}-${pack.size}-${pack.pills || ''}`.replace(/\s+/g, '-'),
+        name: `${product.name} - ${pack.size} ${pack.pills ? `(${pack.pills})` : ''}`.trim(),
+        price: currentPackPriceNum,
         image: product.image,
+        pillsCount: pillsNum,
       })
     }
-    setPackQuantities(prev => ({ ...prev, [pack.size]: 1 }))
+    setPackQuantities(prev => ({ ...prev, [packKey]: 1 }))
   }
 
-  const updatePackQuantity = (packSize: string, change: number) => {
+  const updatePackQuantity = (packKey: string, change: number) => {
     setPackQuantities(prev => {
-      const current = prev[packSize] || 1
+      const current = prev[packKey] || 1
       return {
         ...prev,
-        [packSize]: Math.max(1, current + change)
+        [packKey]: Math.max(1, current + change)
       }
     })
   }
@@ -212,8 +227,7 @@ export function ProductDetailClient({ product }: { product: Product }) {
                   </div>
                 </div>
 
-                {/* Pack Selection Table */}
-                {product.packs && product.packs.length > 0 ? (
+                {hasPacks ? (
                   <div className="mb-6">
                     <div className="bg-card rounded-3xl border border-border overflow-hidden shadow-sm">
                       <div className="bg-muted/30 p-4 border-b border-border text-center">
@@ -223,36 +237,41 @@ export function ProductDetailClient({ product }: { product: Product }) {
                       <div className="divide-y divide-border/50">
                         {/* Table Header */}
                         <div className="hidden sm:grid grid-cols-12 gap-4 p-4 text-xs font-bold text-muted-foreground uppercase tracking-wider bg-muted/10">
-                          <div className="col-span-4 pl-2">Option</div>
-                          <div className="col-span-3 text-center">Price (USD)</div>
+                          <div className="col-span-4 pl-2">Size & Quantity</div>
+                          <div className="col-span-3 text-center">Price</div>
                           <div className="col-span-2 text-center">Qty</div>
                           <div className="col-span-3 text-center">Action</div>
                         </div>
 
-                        {product.packs.map((pack, i) => (
-                          <div key={i} className="flex flex-col sm:grid sm:grid-cols-12 gap-4 items-center p-4 hover:bg-muted/10 transition-colors">
+                        {displayPacks.map((pack, i) => {
+                          const packKey = `${pack.size}-${pack.pills || ''}`;
+                          return (
+                          <div key={i} className="flex flex-col sm:grid sm:grid-cols-12 gap-4 items-center p-4 hover:bg-muted/10 transition-colors border-l-4 border-transparent hover:border-primary">
                             <div className="sm:col-span-4 w-full text-center sm:text-left pl-0 sm:pl-2">
-                              <span className="font-bold text-foreground text-sm">{pack.size}</span>
+                              <span className="font-bold text-foreground text-sm block leading-tight">{pack.size}</span>
+                              {pack.pills && <span className="text-xs text-muted-foreground font-semibold uppercase">{pack.pills}</span>}
                             </div>
                             
                             <div className="sm:col-span-3 text-center w-full">
-                              <div className="font-bold text-lg text-foreground">${pack.price}</div>
+                              <div className="font-bold text-xl text-foreground">
+                                ${typeof pack.price === 'number' ? pack.price.toFixed(2) : pack.price}
+                              </div>
                             </div>
                             
                             <div className="sm:col-span-2 flex justify-center w-full">
                               <div className="flex items-center border border-border rounded-lg bg-background">
                                 <button
-                                  onClick={() => updatePackQuantity(pack.size, -1)}
+                                  onClick={() => updatePackQuantity(packKey, -1)}
                                   disabled={isOutOfStock}
                                   className="w-8 h-8 flex items-center justify-center text-foreground hover:bg-muted transition-colors rounded-l-lg disabled:opacity-40"
                                 >
                                   −
                                 </button>
                                 <span className="w-8 text-center text-sm font-semibold text-foreground">
-                                  {packQuantities[pack.size] || 1}
+                                  {packQuantities[packKey] || 1}
                                 </span>
                                 <button
-                                  onClick={() => updatePackQuantity(pack.size, 1)}
+                                  onClick={() => updatePackQuantity(packKey, 1)}
                                   disabled={isOutOfStock}
                                   className="w-8 h-8 flex items-center justify-center text-foreground hover:bg-muted transition-colors rounded-r-lg disabled:opacity-40"
                                 >
@@ -266,14 +285,14 @@ export function ProductDetailClient({ product }: { product: Product }) {
                                 onClick={() => handlePackAddToCart(pack)} 
                                 size="sm"
                                 disabled={isOutOfStock}
-                                className="w-full sm:w-auto bg-primary text-primary-foreground font-bold shadow-md hover:shadow-lg transition-all rounded-full"
+                                className="w-full sm:w-auto bg-primary text-primary-foreground font-bold shadow-md hover:shadow-lg transition-all rounded-full px-6 py-5"
                               >
-                                <ShoppingCart className="h-4 w-4 mr-1.5" />
-                                {isOutOfStock ? 'Out of Stock' : 'Add'}
+                                <ShoppingCart className="h-4 w-4 mr-2" />
+                                {isOutOfStock ? 'Out of Stock' : 'Add to Cart'}
                               </Button>
                             </div>
                           </div>
-                        ))}
+                        )})}
                       </div>
                     </div>
                   </div>
@@ -283,7 +302,7 @@ export function ProductDetailClient({ product }: { product: Product }) {
                     <div>
                       <div className="text-3xl font-black text-foreground mb-1">${product.price.toFixed(2)}</div>
                       <div className={isOutOfStock ? "text-red-500 font-semibold text-sm" : "text-green-600 font-semibold text-sm"}>
-                        {isOutOfStock ? 'Out of Stock' : 'In Stock'}
+                         {isOutOfStock ? 'Out of Stock' : 'In Stock'}
                       </div>
                     </div>
                     

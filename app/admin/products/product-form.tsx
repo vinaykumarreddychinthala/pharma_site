@@ -91,15 +91,9 @@ export function ProductForm({ initialData }: ProductFormProps) {
               <Textarea id="description" name="description" required defaultValue={initialData?.description} className="resize-none" rows={3}/>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="price">Price (USD)</Label>
-                <Input id="price" name="price" type="number" step="0.01" required defaultValue={initialData?.price} />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="stock">Initial Stock</Label>
-                <Input id="stock" name="stock" type="number" required defaultValue={initialData?.stock ?? 100} />
-              </div>
+            <div className="space-y-2">
+              <Label htmlFor="stock">Initial Stock</Label>
+              <Input id="stock" name="stock" type="number" required defaultValue={initialData?.stock ?? 100} />
             </div>
 
             <div className="space-y-2">
@@ -143,13 +137,16 @@ export function ProductForm({ initialData }: ProductFormProps) {
               <StringListInput label="Usage Guidelines" name="usage_instructions" defaultValue={initialData?.usage || initialData?.howToUse} />
             </div>
 
+
+
             <ObjectListInput 
-              label="Dosage Options" 
-              name="dosage" 
-              defaultValue={initialData?.dosage}
+              label="Pricing & Packs (Tablet Size + Pill Count Combinations)" 
+              name="packs" 
+              defaultValue={initialData?.packs}
               fields={[
-                { key: 'strength', label: 'Strength (e.g. 50mg)' },
-                { key: 'price', label: 'Price Tag (e.g. $5.00)' }
+                { key: 'size', label: 'Tablet Size (e.g. 100 mg)' },
+                { key: 'pills', label: 'Pill Count (e.g. 100 pills)' },
+                { key: 'price', label: 'Pack Price (e.g. 80)' }
               ]}
             />
 

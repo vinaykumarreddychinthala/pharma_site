@@ -13,6 +13,8 @@ export interface Product {
   image: string
   category: string
   stock: number
+  packs?: any[]
+  dosage?: any[]
 }
 
 interface ProductCardProps {
@@ -74,7 +76,9 @@ export function ProductCard({ product }: ProductCardProps) {
 
         <div className="flex items-center justify-between mb-5 pb-4 border-b border-border/50">
           <span className="text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-            ${product.price}
+            {(product.packs && product.packs.length > 0) || (product.dosage && product.dosage.length > 0) 
+              ? <span className="text-lg">Options Available</span>
+              : `$${product.price}`}
           </span>
           {product.stock > 0 ? (
             <span className="text-xs font-semibold bg-primary/10 text-primary px-3 py-1 rounded-full">
@@ -93,9 +97,18 @@ export function ProductCard({ product }: ProductCardProps) {
             disabled={product.stock === 0}
             className="flex-1 bg-gradient-to-r from-primary to-secondary hover:shadow-lg font-semibold"
             size="sm"
+            asChild={(product.packs && product.packs.length > 0) || (product.dosage && product.dosage.length > 0)}
           >
-            <ShoppingCart className="h-4 w-4 mr-2" />
-            Add to Cart
+            {((product.packs && product.packs.length > 0) || (product.dosage && product.dosage.length > 0)) ? (
+              <Link href={`/products/${product.id}`}>
+                View Details
+              </Link>
+            ) : (
+              <>
+                <ShoppingCart className="h-4 w-4 mr-2" />
+                Add to Cart
+              </>
+            )}
           </Button>
           <Button
             onClick={handleWishlist}

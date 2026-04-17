@@ -9,7 +9,7 @@ import { useCart } from '@/context/cart-context'
 import Link from 'next/link'
 
 export default function CheckoutPage() {
-  const { cart, clearCart, getSubtotal, getDiscount, getCartTotal } = useCart()
+  const { cart, clearCart, getSubtotal, getDiscount, getCartTotal, shippingCost, setShippingCost } = useCart()
   const [orderPlaced, setOrderPlaced] = useState(false)
   const [placedOrderDetails, setPlacedOrderDetails] = useState<{id: string, total: number, items: any[], subtotal: number, discount: number} | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -137,6 +137,7 @@ export default function CheckoutPage() {
           cart,
           subtotal: getSubtotal(),
           discount: getDiscount(),
+          shippingAmount: shippingCost,
           total: getCartTotal()
         })
       })
@@ -317,9 +318,26 @@ export default function CheckoutPage() {
                       </select>
                     </div>
 
+                    <div className="mb-8 pt-6 border-t border-border">
+                      <h3 className="text-lg font-bold mb-4 text-foreground">Shipping Method</h3>
+                      <div className="p-4 rounded-xl border-2 border-primary bg-primary/5">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="font-bold text-foreground">
+                              {shippingCost === 35 ? 'Express/Bulk Shipping' : 'Standard Shipping'}
+                            </p>
+                            <p className="text-xs text-muted-foreground">
+                              {shippingCost === 35 ? 'Orders of 250+ pills' : 'Orders under 250 pills'}
+                            </p>
+                          </div>
+                          <span className="font-bold text-primary">${shippingCost.toFixed(2)}</span>
+                        </div>
+                      </div>
+                    </div>
+
                     {/* Submit Button */}
                     <Button type="submit" size="lg" className="w-full" disabled={isSubmitting}>
-                      {isSubmitting ? 'Processing...' : 'Place Order'}
+                      {isSubmitting ? 'Processing...' : `Place Order ($${getCartTotal().toFixed(2)})`}
                     </Button>
                   </div>
                 </form>
@@ -355,7 +373,7 @@ export default function CheckoutPage() {
                     )}
                     <div className="flex justify-between text-sm text-muted-foreground">
                       <span>Shipping</span>
-                      <span className="text-green-600 font-semibold">FREE</span>
+                      <span className="text-primary font-semibold">${shippingCost.toFixed(2)}</span>
                     </div>
                     <div className="border-t border-border pt-3 flex justify-between text-xl font-bold text-foreground">
                       <span>Total</span>

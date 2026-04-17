@@ -1,5 +1,6 @@
 export interface ProductPack {
   size: string
+  pills?: string
   price: number
   unitPrice?: number
 }
@@ -215,7 +216,8 @@ export const products: Product[] = [
       { size: '50 Card Set', price: 70 },
     ],
     shippingOptions: [
-      { quantity: 'Per order', price: 27 },
+      { quantity: '100 pills', price: 27 },
+      { quantity: '250 pills', price: 35 },
     ],
     howToUse: [
       'Shuffle the deck',

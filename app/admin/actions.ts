@@ -36,7 +36,7 @@ export async function createProduct(formData: FormData) {
     const title = formData.get('title') as string
     const overview = formData.get('overview') as string
     const description = formData.get('description') as string
-    const price = parseFloat(formData.get('price') as string)
+    const price = parseFloat(formData.get('price') as string) || 0
     const category = formData.get('category') as string
     const stock = parseInt(formData.get('stock') as string) || 0
     
@@ -50,6 +50,7 @@ export async function createProduct(formData: FormData) {
     const how_it_works = formData.get('how_it_works') as string
     const uses = safeParseJSON(formData.get('uses'), [])
     const dosage = safeParseJSON(formData.get('dosage'), [])
+    const packs = safeParseJSON(formData.get('packs'), [])
     const effects = safeParseJSON(formData.get('effects'), {})
     const usage_instructions = safeParseJSON(formData.get('usage_instructions'), [])
     
@@ -86,6 +87,7 @@ export async function createProduct(formData: FormData) {
       how_it_works,
       uses,
       dosage,
+      packs,
       effects,
       usage_instructions,
       side_effects,
@@ -121,7 +123,7 @@ export async function updateProduct(formData: FormData) {
     const title = formData.get('title') as string
     const overview = formData.get('overview') as string
     const description = formData.get('description') as string
-    const price = parseFloat(formData.get('price') as string)
+    const price = parseFloat(formData.get('price') as string) || 0
     const category = formData.get('category') as string
     const stock = parseInt(formData.get('stock') as string) || 0
     
@@ -134,6 +136,7 @@ export async function updateProduct(formData: FormData) {
     const how_it_works = formData.get('how_it_works') as string
     const uses = safeParseJSON(formData.get('uses'), [])
     const dosage = safeParseJSON(formData.get('dosage'), [])
+    const packs = safeParseJSON(formData.get('packs'), [])
     const effects = safeParseJSON(formData.get('effects'), {})
     const usage_instructions = safeParseJSON(formData.get('usage_instructions'), [])
     
@@ -176,6 +179,7 @@ export async function updateProduct(formData: FormData) {
       how_it_works,
       uses,
       dosage,
+      packs,
       effects,
       usage_instructions,
       side_effects,

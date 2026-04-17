@@ -9,7 +9,7 @@ import Link from 'next/link'
 import { useState } from 'react'
 
 export default function CartPage() {
-  const { cart, removeFromCart, updateQuantity, couponCode, applyCoupon, getSubtotal, getDiscount, getCartTotal } = useCart()
+  const { cart, removeFromCart, updateQuantity, couponCode, applyCoupon, getSubtotal, getDiscount, getCartTotal, shippingCost } = useCart()
   const [couponInput, setCouponInput] = useState('')
   const [appliedMessage, setAppliedMessage] = useState('')
 
@@ -191,7 +191,7 @@ export default function CartPage() {
 
                     <div className="flex justify-between text-sm text-muted-foreground">
                       <span>Shipping</span>
-                      <span className="text-green-600 font-semibold">FREE</span>
+                      <span className="font-semibold text-primary">${shippingCost.toFixed(2)}</span>
                     </div>
 
                     <div className="border-t border-border pt-3 flex justify-between text-xl font-bold text-foreground">

@@ -8,6 +8,7 @@ export interface CartItem {
   price: number
   quantity: number
   image: string
+  pillsCount: number
 }
 
 export interface WishlistItem {
@@ -33,6 +34,8 @@ export interface CartContextType {
   getCartTotal: () => number
   getSubtotal: () => number
   getDiscount: () => number
+  shippingCost: number
+  setShippingCost: (cost: number) => void
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined)
@@ -49,6 +52,9 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const [wishlist, setWishlist] = useState<WishlistItem[]>([])
   const [couponCode, setCouponCode] = useState('')
   const [discountPercent, setDiscountPercent] = useState(0)
+  
+  // Calculate shipping dynamically based on pill count
+  const shippingCost = cart.reduce((total, item) => total + (item.pillsCount || 0) * item.quantity, 0) >= 250 ? 35 : 27;
 
   // Load from localStorage on mount
   useEffect(() => {
@@ -150,8 +156,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   }, [discountPercent, getSubtotal])
 
   const getCartTotal = useCallback(() => {
-    return getSubtotal() - getDiscount()
-  }, [getSubtotal, getDiscount])
+    return getSubtotal() - getDiscount() + shippingCost
+  }, [getSubtotal, getDiscount, shippingCost])
 
   const value: CartContextType = {
     cart,
@@ -169,6 +175,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     getCartTotal,
     getSubtotal,
     getDiscount,
+    shippingCost,
+    setShippingCost: () => {}, // No-op, now automatic
   }
 
   return (
