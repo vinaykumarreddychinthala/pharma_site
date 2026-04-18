@@ -52,9 +52,9 @@ export default function AboutPage() {
                 <div className="relative">
                   <div className="absolute -inset-4 bg-gradient-to-br from-primary/20 to-secondary/20 rounded-3xl blur-2xl" />
                   <img
-                    src="/logo.png"
+                    src="/pharma_logo.png"
                     alt="Believe Pharma"
-                    className="relative h-72 w-auto drop-shadow-2xl"
+                    className="relative h-80 w-auto drop-shadow-2xl"
                   />
                 </div>
               </div>

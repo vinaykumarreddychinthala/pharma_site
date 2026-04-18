@@ -17,7 +17,7 @@ export function Footer() {
             <p className="text-sm opacity-95 leading-relaxed">
               Your trusted healthcare partner delivering quality medicines with excellence and reliability.
             </p>
-            <img src="/logo.png" alt="Believe Pharma" className="h-14 w-auto hover:scale-105 transition-transform" />
+            <img src="/pharma_logo.png" alt="Believe Pharma" className="h-16 w-auto hover:scale-105 transition-transform" />
           </div>
 
           {/* Quick Links */}
@@ -35,11 +35,6 @@ export function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/faq" className="text-sm opacity-90 hover:opacity-100 hover:translate-x-1 transition-all inline-block">
-                  → FAQ
-                </Link>
-              </li>
-              <li>
                 <Link href="/blog" className="text-sm opacity-90 hover:opacity-100 hover:translate-x-1 transition-all inline-block">
                   → Health Blog
                 </Link>
@@ -54,21 +49,6 @@ export function Footer() {
               <li>
                 <Link href="/contact" className="text-sm opacity-90 hover:opacity-100 hover:translate-x-1 transition-all inline-block">
                   → Contact Us
-                </Link>
-              </li>
-              <li>
-                <Link href="/shipping" className="text-sm opacity-90 hover:opacity-100 hover:translate-x-1 transition-all inline-block">
-                  → Shipping & Delivery
-                </Link>
-              </li>
-              <li>
-                <Link href="/returns" className="text-sm opacity-90 hover:opacity-100 hover:translate-x-1 transition-all inline-block">
-                  → Returns & Refunds
-                </Link>
-              </li>
-              <li>
-                <Link href="/privacy" className="text-sm opacity-90 hover:opacity-100 hover:translate-x-1 transition-all inline-block">
-                  → Privacy Policy
                 </Link>
               </li>
             </ul>
@@ -106,17 +86,6 @@ export function Footer() {
             <p className="text-sm opacity-90">
               © 2024 Believe Pharma. All rights reserved. | Made with care for your health
             </p>
-            <div className="flex gap-6">
-              <Link href="/privacy" className="text-sm opacity-90 hover:opacity-100 transition-opacity">
-                Privacy
-              </Link>
-              <Link href="/terms" className="text-sm opacity-90 hover:opacity-100 transition-opacity">
-                Terms
-              </Link>
-              <Link href="/cookies" className="text-sm opacity-90 hover:opacity-100 transition-opacity">
-                Cookies
-              </Link>
-            </div>
           </div>
         </div>
       </div>

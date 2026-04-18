@@ -16,7 +16,7 @@ export function Header() {
         <div className="flex items-center justify-between h-16 md:h-20">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 flex-shrink-0 hover:opacity-80 transition-opacity">
-            <img src="/logo.png" alt="Believe Pharma" className="h-12 md:h-14 w-auto" />
+            <img src="/pharma_logo.png" alt="Believe Pharma" className="h-14 md:h-16 w-auto" />
             <span className="font-bold text-lg md:text-xl bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent hidden sm:inline">
               Believe Pharma
             </span>

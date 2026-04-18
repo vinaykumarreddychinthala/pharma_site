@@ -61,9 +61,9 @@ export default async function Home() {
               <div className="relative flex justify-center items-center">
                 <div className="absolute inset-0 bg-gradient-to-br from-primary-foreground/10 to-transparent rounded-3xl blur-2xl"></div>
                 <img
-                  src="/logo.png"
+                  src="/pharma_logo.png"
                   alt="Believe Pharma"
-                  className="h-80 w-auto drop-shadow-2xl relative z-10 hover:scale-105 transition-transform duration-300"
+                  className="h-[22rem] w-auto drop-shadow-2xl relative z-10 hover:scale-105 transition-transform duration-300"
                 />
               </div>
             </div>
