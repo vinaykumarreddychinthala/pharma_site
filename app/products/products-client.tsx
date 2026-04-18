@@ -5,6 +5,13 @@ import { Header } from '@/components/header'
 import { Footer } from '@/components/footer'
 import { ProductCard } from '@/components/product-card'
 import { Button } from '@/components/ui/button'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 
 const categories = ['All', 'ED Treatment', 'Sexual Wellness', 'Couples']
 
@@ -45,47 +52,35 @@ export function ProductsClient({ initialProducts }: { initialProducts: any[] }) 
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
               <div className="lg:col-span-1">
-                <div className="bg-white p-6 rounded-lg border border-border mb-6">
-                  <h3 className="font-semibold text-lg mb-4 text-foreground">Categories</h3>
-                  <div className="space-y-2">
-                    {categories.map((category) => (
-                      <button
-                        key={category}
-                        onClick={() => setSelectedCategory(category)}
-                        className={`block w-full text-left px-4 py-2 rounded transition-colors ${
-                          selectedCategory === category
-                            ? 'bg-primary text-primary-foreground font-semibold'
-                            : 'bg-muted/50 text-foreground hover:bg-muted'
-                        }`}
-                      >
-                        {category}
-                      </button>
-                    ))}
-                  </div>
+                <div className="bg-white p-6 rounded-2xl border border-border mb-6 shadow-sm">
+                  <h3 className="font-bold text-sm uppercase tracking-wider mb-4 text-muted-foreground">Categories</h3>
+                  <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+                    <SelectTrigger className="w-full bg-muted/30 border-border/60 rounded-xl h-11">
+                      <SelectValue placeholder="Select category" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {categories.map((category) => (
+                        <SelectItem key={category} value={category}>
+                          {category}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
 
-                <div className="bg-white p-6 rounded-lg border border-border">
-                  <h3 className="font-semibold text-lg mb-4 text-foreground">Sort By</h3>
-                  <div className="space-y-2">
-                    {[
-                      { value: 'featured', label: 'Featured' },
-                      { value: 'price-low', label: 'Price: Low to High' },
-                      { value: 'price-high', label: 'Price: High to Low' },
-                      { value: 'name', label: 'Name: A to Z' },
-                    ].map((option) => (
-                      <button
-                        key={option.value}
-                        onClick={() => setSortBy(option.value)}
-                        className={`block w-full text-left px-4 py-2 rounded transition-colors ${
-                          sortBy === option.value
-                            ? 'bg-primary text-primary-foreground font-semibold'
-                            : 'bg-muted/50 text-foreground hover:bg-muted'
-                        }`}
-                      >
-                        {option.label}
-                      </button>
-                    ))}
-                  </div>
+                <div className="bg-white p-6 rounded-2xl border border-border shadow-sm">
+                  <h3 className="font-bold text-sm uppercase tracking-wider mb-4 text-muted-foreground">Sort By</h3>
+                  <Select value={sortBy} onValueChange={setSortBy}>
+                    <SelectTrigger className="w-full bg-muted/30 border-border/60 rounded-xl h-11">
+                      <SelectValue placeholder="Sort order" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="featured">Featured</SelectItem>
+                      <SelectItem value="price-low">Price: Low to High</SelectItem>
+                      <SelectItem value="price-high">Price: High to Low</SelectItem>
+                      <SelectItem value="name">Name: A to Z</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
 
