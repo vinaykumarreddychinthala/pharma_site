@@ -51,6 +51,11 @@ export function Footer() {
                   → Contact Us
                 </Link>
               </li>
+              <li>
+                <Link href="/privacy-policy" className="text-sm opacity-90 hover:opacity-100 hover:translate-x-1 transition-all inline-block">
+                  → Privacy Policy
+                </Link>
+              </li>
             </ul>
           </div>
 
@@ -86,6 +91,11 @@ export function Footer() {
             <p className="text-sm opacity-90">
               © 2024 Believe Pharma. All rights reserved. | Made with care for your health
             </p>
+            <div className="flex items-center gap-6">
+              <Link href="/privacy-policy" className="text-sm opacity-80 hover:opacity-100 hover:underline transition-all">
+                Privacy Policy
+              </Link>
+            </div>
           </div>
         </div>
       </div>
