@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import './globals.css'
 import { CartProvider } from '@/context/cart-context'
+import ContactPopup from '@/components/contact-popup'
 
 const _geist = Geist({ subsets: ["latin"] });
 const _geistMono = Geist_Mono({ subsets: ["latin"] });
@@ -41,6 +42,7 @@ export default function RootLayout({
         <CartProvider>
           {children}
           <Analytics />
+          <ContactPopup />
         </CartProvider>
       </body>
     </html>
